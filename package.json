@@ -1,0 +1,24 @@
+{
+  "name": "stringpack",
+  "version": "1.0.0",
+  "description": "Like MessagePack but generates only valid strings.",
+  "main": "stringpack.js",
+  "scripts": {
+    "test": "mocha test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scrollback/stringpack.git"
+  },
+  "keywords": [
+    "serialization",
+    "messagepack",
+    "json"
+  ],
+  "author": "Scrollback",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/scrollback/stringpack/issues"
+  },
+  "homepage": "https://github.com/scrollback/stringpack#readme"
+}
