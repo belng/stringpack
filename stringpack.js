@@ -21,7 +21,7 @@ var ALPH_S = 33, ALPH_L = 94,
 	INT_MX = INT1_R * Math.pow(ALPH_L, 6) - 1,
 	FLT_B = 370, FLT_LS = [2, 5, 8];
 
-module.exports = function StringPack () {
+module.exports = function StringPack (classes) {
 
 function decode(string) {
 	var i = 0;
@@ -75,7 +75,13 @@ function decode(string) {
 	}
 
 	function spl(index) {
+		console.log("Decoding class " + index);
+		var cls = classes[index], args = [],
+			object = Object.create(cls.prototype);
 
+		for (var j = 0; j < cls.length; j++) { args.push(next()); }
+		cls.apply(object, args);
+		return object;
 	}
 
 	function next () {
@@ -93,9 +99,7 @@ function decode(string) {
 		} else if (code >= STR_3S && code <= STR_3E) {
 			return string.substring(i, i += (code - STR_3S + STR_3O));
 		} else if (code >= SPL_S && code <= SPL_E) {
-			var cls = classes[code - SPL_S], args = [];
-			for (var j = 0; j < cls.length; j++) { args.push(next()); }
-			return cls.build.apply(null, args);
+			return spl(code - SPL_S);
 		} else if (code >= ARR_S && code <= ARR_E) {
 			arr = []; len = code - ARR_S;
 			for (j = 0; j < len; j++) { arr.push(next()); }
@@ -133,7 +137,7 @@ function decode(string) {
 						case INFP: return +Infinity;
 						case INFN: return -Infinity;
 						case NAN: return NaN;
-						default: return spl(code - SPL1_S);
+						default: return spl(code - SPL1_S + SPL1_O + 1);
 					}
 			}
 		}
@@ -256,7 +260,34 @@ function encode (object) {
 			return prefix;
 		}
 
-		if (typeof object.toSPack === "function") {
+		if (typeof object.packArguments === "function") {
+			i = classes.indexOf(object.constructor);
+
+			console.log("Encoding class " + i);
+
+			if (i < 0) {
+				throw Error("ENC_SPL_CONSTRUCTOR_NOT_FOUND");
+			} else if (i <= SPL_E - SPL_S) {
+				prefix = code(SPL_S + i);
+			} else if (i - SPL1_O - 1 <= SPL1_E - SPL1_S) {
+				prefix = code(SPL) + code(SPL1_S + i - SPL1_O - 1);
+			} else {
+				throw Error("ENC_SPL_OUTSIDE_BOUNDS");
+			}
+
+			object = object.packArguments();
+			if (object.length > classes[i].length) {
+				throw Error("SPL_TOO_MANY_ARGS");
+			}
+			while (object.length < classes[i].length) {
+				object.push(undefined);
+			}
+
+			for (i = 0, len = object.length; i < len; i++) {
+				prefix += encode(object[i]);
+			}
+
+			return prefix;
 		}
 
 		len = Object.keys(object).length;
