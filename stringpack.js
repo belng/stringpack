@@ -75,7 +75,6 @@ function decode(string) {
 	}
 
 	function spl(index) {
-		console.log("Decoding class " + index);
 		var cls = classes[index], args = [],
 			object = Object.create(cls.prototype);
 
@@ -262,8 +261,6 @@ function encode (object) {
 
 		if (typeof object.packArguments === "function") {
 			i = classes.indexOf(object.constructor);
-
-			console.log("Encoding class " + i);
 
 			if (i < 0) {
 				throw Error("ENC_SPL_CONSTRUCTOR_NOT_FOUND");
