@@ -75,10 +75,12 @@ function decode(string) {
 	}
 
 	function spl(index) {
-		var cls = classes[index], args = [],
+		var cls = classes[index],
+			args = [],
+			len = uint(),
 			object = Object.create(cls.prototype);
 
-		for (var j = 0; j < cls.length; j++) { args.push(next()); }
+		for (var j = 0; j < len; j++) { args.push(next()); }
 		cls.apply(object, args);
 		return object;
 	}
@@ -273,12 +275,7 @@ function encode (object) {
 			}
 
 			object = object.packArguments();
-			if (object.length > classes[i].length) {
-				throw Error("SPL_TOO_MANY_ARGS");
-			}
-			while (object.length < classes[i].length) {
-				object.push(undefined);
-			}
+			prefix += uint(object.length);
 
 			for (i = 0, len = object.length; i < len; i++) {
 				prefix += encode(object[i]);
