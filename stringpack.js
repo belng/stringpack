@@ -1,5 +1,19 @@
-var ALPH_S = 33, ALPH_L = 94,
-	STR_1S = 33, STR_1E = 47,
+/*
+	StringPack serializes almost all JavaScript objects in valid UTF8 strings.
+
+	It supports objects constructed from custom classes, undefined, null, ±0,
+	±Infinity,
+
+
+	Some amount of human debuggability (but not readability) is a design goal:
+	- Strings are untouched
+	- Numbers up to 15 have their hexadecimal representations
+
+
+*/
+
+var ALPH_S = 33, ALPH_L = 94, // Start & Length of the encoding character set
+	STR_1S = 33, STR_1E = 47, // Start & End of the first string range
 	STR_2S = 58, STR_2E = 64, STR_2O = 15,
 	STR_3S = 91, STR_3E = 94, STR_3O = 22,
 	INT_1S = 48, INT_1E = 57,
@@ -148,7 +162,7 @@ function decode(string) {
 }
 
 function encode (object) {
-	var prefix, len, i;
+	var prefix, len, i, keys;
 
 	function digit(code) {
 		return String.fromCharCode(ALPH_S + code)
@@ -284,16 +298,17 @@ function encode (object) {
 			return prefix;
 		}
 
-		len = Object.keys(object).length;
+		keys = Object.keys(object).sort();
+		len = keys.length;
 		if (len < MAP_E - MAP_S) {
 			prefix = code(MAP_S + len);
 		} else {
 			prefix = code(MAP) + uint(len);
 		}
 
-		for (i in object) { if (object.hasOwnProperty(i)) {
-			prefix += encode(i) + encode(object[i]);
-		} }
+		for (i = 0; i < len; i++) {
+			prefix += encode(keys[i]) + encode(object[keys[i]]);
+		}
 
 		return prefix;
 	}

@@ -39,7 +39,7 @@ describe("x", function () {
 		enc = packer.encode(val),
 		dec = packer.decode(enc);
 
-		console.log(val, dec);
+		console.log(enc);
 
 		expect(val).toEqual(dec);
 	});
