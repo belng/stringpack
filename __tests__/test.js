@@ -2,8 +2,10 @@ jest.dontMock("../stringpack");
 
 
 
-function Example (name) {
+function Example (name, age) {
 	this.name = name;
+	expect(arguments.length).toEqual(1);
+	this.age = age;
 }
 
 Example.prototype.packArguments = function () {
@@ -36,6 +38,8 @@ describe("x", function () {
 		},
 		enc = packer.encode(val),
 		dec = packer.decode(enc);
+
+		console.log(enc);
 
 		expect(val).toEqual(dec);
 	});
