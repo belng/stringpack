@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/scrollback/stringpack/issues"
   },
-  "homepage": "https://github.com/scrollback/stringpack#readme"
+  "homepage": "https://github.com/scrollback/stringpack#readme",
+  "devDependencies": {
+    "jest-cli": "^0.8.2"
+  }
 }

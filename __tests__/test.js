@@ -39,4 +39,34 @@ describe("x", function () {
 
 		expect(val).toEqual(dec);
 	});
+
+	it('Encoding a plain object while there are classes defined should be safely decoded', function() {
+		var object = {
+		    "type":"change",
+		    "message": {
+		        "entities": {
+		            "c70d25dd-19aa-40d7-ae9b-a945ed496d8f":{
+		                "counts":{},
+		                "id":"c70d25dd-19aa-40d7-ae9b-a945ed496d8f",
+		                "type":3,
+		                "updateTime":1458113715131,
+		                "score":28.008164740390658,
+		                "body": "have a nice day",
+		                "createTime":1458112138791,
+		                "creator":"harish",
+		                "deleteTime":null,
+		                "meta":null,
+		                "name": "hi there",
+		                "parents": ["cae578ba-e1a1-4a3e-917c-dd2f4011f882"],
+		                "tags":null,
+		                "updater":null
+		            }
+		        }
+		    }
+		}
+		var c = packer.encode(object);
+		var clone = packer.decode(c);
+
+		expect(object).toEqual(clone);
+	});
 });
