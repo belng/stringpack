@@ -103,7 +103,6 @@ function decode(string) {
 	function next () {
 		var arr, map, len, j,
 			code = string.charCodeAt(i++);
-
 		if (isNaN(code)) { throw Error("DEC_UNEXP_END"); }
 
 		if (code >= INT_1S && code <= INT_1E) {

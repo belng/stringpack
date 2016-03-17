@@ -22,7 +22,7 @@ describe("x", function () {
 				name: "China", region: "East Asia",
 				flagColors: ["red", "yellow"],
 				leader: { name: "习近平", title: "President", term: 2 },
-				population: 1434440076830
+				population: 1434.440076830
 			},
 			in: {
 				name: "India", region: "South Asia",
@@ -69,8 +69,18 @@ describe("x", function () {
 		    }
 		}
 		var c = packer.encode(object);
+		console.log(c);
 		var clone = packer.decode(c);
 
 		expect(object).toEqual(clone);
+	});
+
+	it.only('Floats', function () {
+		var val = 1434.4400768307567845678367486656,
+			enc = packer.encode(val),
+			dec = packer.decode(enc);
+
+		console.log(val, enc, dec);
+		assert.equal(val, dec);
 	});
 });
