@@ -33,7 +33,7 @@ var ALPH_S = 33, ALPH_L = 94, // Start & Length of the encoding character set
 	UINT1_R = 31, UINT_LS = [2, 3, 5],
 	INT1_R = 11, INT_LS = [2, 3, 5, 7],
 	INT_MX = INT1_R * Math.pow(ALPH_L, 6) - 1,
-	FLT_B = 370, FLT_LS = [2, 5, 8];
+	FLT_B = 370, FLT_LS = [2, 5, 10];
 
 module.exports = function StringPack (classes) {
 
@@ -41,6 +41,7 @@ function decode(string) {
 	var i = 0;
 
 	function digit() {
+		if (i > string.length) { throw Error("DEC_UNEXP_END"); }
 		return string.charCodeAt(i++) - ALPH_S;
 	}
 
@@ -100,8 +101,10 @@ function decode(string) {
 	}
 
 	function next () {
-		var arr, map, len, j;
-		code = string.charCodeAt(i++);
+		var arr, map, len, j,
+			code = string.charCodeAt(i++);
+
+		if (isNaN(code)) { throw Error("DEC_UNEXP_END"); }
 
 		if (code >= INT_1S && code <= INT_1E) {
 			return code - INT_1S;
@@ -158,7 +161,16 @@ function decode(string) {
 		}
 	}
 
-	return next();
+	try {
+		return next();
+	} catch (e) {
+		throw new Error(
+			"ERR_DECODE\n" +
+			string.substr(Math.max(0, i - 10), 10) +
+			"←" + string.substr(i, 10) + "\n" +
+			e.message
+		);
+	}
 }
 
 function encode (object) {
@@ -206,6 +218,7 @@ function encode (object) {
 		if (exp > 2 || exp < -6 || val * Math.pow(10, exp) > INT_MX) {
 			ret = int(val, 2, FLT_LS);
 			exp += FLT_B;
+
 			return code(FLT) +
 				digit(Math.floor(exp / 23) * 3 + ret[1]) +
 			 	digit((exp % 23) * 4 + ret[0] * 2 + sign) +
@@ -247,9 +260,9 @@ function encode (object) {
 	} else if (typeof object === "string") {
 		if (object.length <= STR_1E - STR_1S) {
 			prefix = code(STR_1S + object.length);
-		} else if (object.length - STR_2O < STR_2E - STR_2S) {
+		} else if (object.length - STR_2O <= STR_2E - STR_2S) {
 			prefix = code(STR_2S + (object.length - STR_2O));
-		} else if (object.length - STR_3O < STR_3E - STR_3S) {
+		} else if (object.length - STR_3O <= STR_3E - STR_3S) {
 			prefix = code(STR_3S + (object.length - STR_3O));
 		} else {
 			prefix = code(STR) + uint(object.length);
@@ -289,6 +302,7 @@ function encode (object) {
 			}
 
 			object = object.packArguments();
+			if (!Array.isArray(object)) { throw Error("ENC_SPL_ARGS_NOT_ARRAY"); }
 			prefix += uint(object.length);
 
 			for (i = 0, len = object.length; i < len; i++) {
