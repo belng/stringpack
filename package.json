@@ -1,6 +1,6 @@
 {
   "name": "stringpack",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Like MessagePack but generates only valid strings.",
   "main": "stringpack.js",
   "scripts": {
