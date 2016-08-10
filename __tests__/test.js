@@ -75,12 +75,27 @@ describe("x", function () {
 		expect(object).toEqual(clone);
 	});
 
-	it.only('Floats', function () {
+	it('Floats', function () {
 		var val = 1434.4400768307567845678367486656,
 			enc = packer.encode(val),
 			dec = packer.decode(enc);
 
 		console.log(val, enc, dec);
 		assert.equal(val, dec);
+	});
+
+	it('double precision numbers', function() {
+		var x = [
+			20813887440.6441,
+			20808064564.8441,
+			1463041978295,
+			20819995305.6091
+		];
+
+
+		var str = packer.encode(x);
+		var ob = packer.decode(str);
+
+		assert.equal(x, ob);
 	});
 });
