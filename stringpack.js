@@ -37,6 +37,8 @@ var ALPH_S = 33, ALPH_L = 94, // Start & Length of the encoding character set
 
 module.exports = function StringPack (classes) {
 
+classes = classes || [];
+
 function decode(string) {
 	var i = 0;
 
@@ -214,7 +216,8 @@ function encode (object) {
 		val *= Math.pow(10, dec - exp);
 		exp -= dec;
 
-		if (exp > 2 || exp < -6 || val * Math.pow(10, exp) > INT_MX) {
+		function big() {
+			console.log("BIG");
 			ret = int(val, 2, FLT_LS);
 			exp += FLT_B;
 
@@ -222,17 +225,27 @@ function encode (object) {
 				digit(Math.floor(exp / 23) * 3 + ret[1]) +
 			 	digit((exp % 23) * 4 + ret[0] * 2 + sign) +
 				ret[2];
+		}
+
+		if (exp > 2 || exp < -6) {
+			return big();
 		} else if (exp < -3) {
+			if (val * Math.pow(10, exp + 6) > INT_MX) return big();
+
 			ret = int(val * Math.pow(10, exp + 6), INT1_R, INT_LS);
 			return code(FLT6) +
 			 	digit(ret[0] * 8 + ret[1] * 2 + sign) +
 				ret[2];
 		} else if (exp < 0) {
+			if (val * Math.pow(10, exp + 3) > INT_MX) return big();
+
 			ret = int(val * Math.pow(10, exp + 3), INT1_R, INT_LS);
 			return code(FLT3) +
 			 	digit(ret[0] * 8 + ret[1] * 2 + sign) +
 				ret[2];
 		} else {
+			if (val * Math.pow(10, exp) > INT_MX) return big();
+
 			ret = int(val * Math.pow(10, exp), INT1_R, INT_LS);
 			return code(INT) +
 			 	digit(ret[0] * 8 + ret[1] * 2 + sign) +

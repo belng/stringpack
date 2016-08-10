@@ -76,7 +76,7 @@ describe("x", function () {
 	});
 
 	it('Floats', function () {
-		var val = 1434.4400768307567845678367486656,
+		var val = 28.008164740390658,
 			enc = packer.encode(val),
 			dec = packer.decode(enc);
 
@@ -96,6 +96,6 @@ describe("x", function () {
 		var str = packer.encode(x);
 		var ob = packer.decode(str);
 
-		assert.equal(x, ob);
+		assert.deepEqual(x, ob);
 	});
 });
